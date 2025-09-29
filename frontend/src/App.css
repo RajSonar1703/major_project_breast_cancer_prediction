@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Navbar */
+.navbar {
+  background: #e91e63;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+.nav-links a {
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+/* Home */
+.home {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffe4ec;
+}
+.home h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.home p {
+  margin-bottom: 20px;
+}
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+.features div {
+  width: 200px;
+}
+
+/* Buttons */
+.btn {
+  background: #e91e63;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.btn:hover {
+  background: #d81b60;
+}
+
+/* Upload */
+.upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+.upload-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.upload-card h2 {
+  margin-bottom: 20px;
+}
+.upload-card input {
+  margin-bottom: 20px;
+}
+
+/* Result */
+.result-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+.result-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+  text-align: center;
+  width: 400px;
+}
+.result-card h2 {
+  color: #e91e63;
+  margin-bottom: 20px;
+}
+.result-label {
+  font-weight: bold;
+}
+.result-text {
+  font-size: 20px;
+  margin: 10px 0;
+}
+.result-text.benign {
+  color: green;
+}
+.result-text.malignant {
+  color: red;
+}
+.disclaimer {
+  font-size: 12px;
+  color: gray;
+  margin: 15px 0;
+}
+
+/* About */
+.about {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+}
+.about h2 {
+  color: #e91e63;
+  margin-bottom: 15px;
+}
+.about h3 {
+  margin-top: 20px;
+}
+.about ul {
+  padding-left: 20px;
+}
+.about li {
+  margin-bottom: 8px;
+}
