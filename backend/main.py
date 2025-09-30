@@ -65,8 +65,18 @@ async def predict_pdf(file: UploadFile = File(...)):
     if len(features) != 30:
         return {"error": "Could not extract all required features"}
 
-    # Predict
     prediction = model.predict([np.array(features)])
-    result = "Malignant" if prediction[0] == 0 else "Benign"
+    prediction_value = int(prediction[0])   
+    result = "Malignant" if prediction_value == 0 else "Benign"
 
-    return {"prediction": result, "features": features}
+    probs = model.predict_proba([np.array(features)])[0]
+    benign_prob = int(round(probs[1] * 100, 2))      
+    malignant_prob = int(round(probs[0] * 100, 2))   
+
+    return {
+        "prediction": result,
+        "features": features,
+        "benign_probability": benign_prob,
+        "malignant_probability": malignant_prob
+    }
+    #return {"prediction": result, "features": features}
