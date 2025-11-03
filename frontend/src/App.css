@@ -114,9 +114,15 @@ h3 {
   color: white;
 }
 .logo {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
 }
+
+.nav-links{
+  margin-right: 80px;
+  font-size: 19px;
+}
+
 .nav-links a {
   margin-left: 20px;
   color: white;
