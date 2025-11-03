@@ -1,16 +1,117 @@
-body {
+/* Make the whole page a flex column layout */
+html, body, #root {
+  height: 100%;
   margin: 0;
-  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fc;
+}
+
+
+main {
+  flex: 1;
+  padding-bottom: 20px; /* Prevent overlap with footer */
+  padding-top: 80px; /* slightly larger than navbar height */
+  min-height: calc(100vh - 120px); /* leave space for footer if visible */
+}
+
+
+footer {
+  background-color: #f3f4f6;
+  color: #4B5563;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 14px;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+
+.feature{
+  margin-right: 10rem;
+  margin-left: 2rem;
+  text-align: left;
+}
+
+ .features{
+  display: grid;
+  grid-template-columns: 1fr;     
+  gap: 2rem;            
+  padding-top: 4rem;              
+  padding-bottom: 4rem;            
+  /* padding-left: 1rem;           
+  padding-right: 1rem; */
+ }
+
+
+ .feature-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 16px;
+  text-align: left;
+}
+
+.feature-table th,
+.feature-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.feature-table th {
+  background-color: #f06292;
+  color: white;
+}
+
+.feature-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
+.feature-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+
+
+.result-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  width: 90%;
+  max-width: 800px;
+  text-align: center;
+}
+
+h3 {
+  color: #e91e63;
+  margin-top: 20px;
+}
+
+
+
+
+
 .navbar {
-  background: #e91e63;
-  color: white;
-  padding: 15px 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background:#db2777; /* or your bg color */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 70px; /* fixed height */
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  color: white;
 }
 .logo {
   font-size: 20px;
@@ -29,7 +130,7 @@ body {
 .home {
   text-align: center;
   padding: 60px 20px;
-  background: #ffe4ec;
+  /* background: #ffe4ec; */
 }
 .home h2 {
   font-size: 28px;
@@ -81,12 +182,12 @@ body {
   margin-bottom: 20px;
 }
 
-.result-container {
+/* .result-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 80vh;
-}
+} */
 .result-card {
   background: white;
   padding: 30px;
@@ -239,4 +340,102 @@ input[type="file"] {
   font-size: 12px;
   color: #888;
   margin-top: 10px;
+}
+
+
+.result-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  padding: 60px 20px;
+  background: #f8f9fb;
+  min-height: 100vh;
+}
+
+/* Title */
+.page-heading {
+  color: #e91e63;
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.page-subtext {
+  color: #555;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 15px;
+  max-width: 700px;
+}
+
+/* Chart + Table Section */
+.analysis-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+/* Desktop: show horizontally */
+@media (min-width: 900px) {
+  .analysis-section {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+  }
+}
+
+.chart-section, .table-section {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  transition: transform 0.3s ease;
+
+}
+.chart-section:hover, .table-section:hover {
+  transform: translateY(-5px);
+}
+
+.section-title {
+  text-align: center;
+  color: #e91e63;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+/* Table */
+.feature-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.feature-table th, .feature-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+.feature-table th {
+  background: #e91e63;
+  color: white;
+}
+
+/* Result Card */
+.result-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+.result-card:hover {
+  transform: translateY(-5px);
 }

@@ -1,6 +1,3 @@
-
-
-
 // // import React, { useState } from "react";
 // // import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 // // import axios from "axios";
@@ -325,7 +322,7 @@
 
 //   return (
 //     <Router>
-//       <Navbar /> 
+//       <Navbar />
 //       <Routes>
 //         <Route path="/" element={<Home />} />
 //         {/* <Route path="/" element={<Upload setResult={setResult} />} /> */}
@@ -340,17 +337,50 @@
 
 // export default App;
 
-
-
-
-
-
-
 // 1234 retry
 
 
+
+
+
+// import React, { useState } from "react";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import Navbar from "./components/Navbar";
+// import Footer from "./components/Footer";
+// import Home from "./pages/Home";
+// import Upload from "./pages/Upload";
+// import About from "./pages/About";
+// import Result from "./pages/Result";
+// import "./App.css";
+
+// function App() {
+//   const [result, setResult] = useState(null);
+
+//   return (
+//     <Router>
+//       <div className="app-container">
+//         <Navbar />
+//         <main>
+//           <Routes>
+//             <Route path="/" element={<Home />} />
+//             <Route path="/upload" element={<Upload setResult={setResult} />} />
+//             <Route path="/result" element={<Result result={result} />} />
+//             <Route path="/about" element={<About />} />
+//           </Routes>
+//         </main>
+//         <Footer />
+//       </div>
+//     </Router>
+//   );
+// }
+
+// export default App;
+
+
+
+
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -364,21 +394,32 @@ function App() {
 
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/upload" element={<Upload setResult={setResult} />} />
-        <Route path="/result" element={<Result result={result} />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-      <Footer />
+      <AppContent result={result} setResult={setResult} />
     </Router>
   );
 }
 
+// New component that uses useLocation()
+function AppContent({ result, setResult }) {
+  const location = useLocation();
+
+  // Hide footer only on Result page
+  const hideFooter = location.pathname === "/result";
+
+  return (
+    <div className="app-container">
+      <Navbar />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/upload" element={<Upload setResult={setResult} />} />
+          <Route path="/result" element={<Result result={result} />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </main>
+      {!hideFooter && <Footer />}
+    </div>
+  );
+}
+
 export default App;
-
-
-
-
-

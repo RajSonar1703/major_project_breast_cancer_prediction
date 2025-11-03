@@ -51,14 +51,43 @@ def extract_features(text):
             features.append(0.0)  # default if not found
     return features
 
+# @app.post("/predict-pdf/")
+# async def predict_pdf(file: UploadFile = File(...)):
+#     # Save uploaded PDF to temporary file
+#     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+#         tmp.write(await file.read())
+#         pdf_path = tmp.name
+
+#     # Extract text and features
+#     text = extract_text_from_pdf(pdf_path)
+#     features = extract_features(text)
+
+#     if len(features) != 30:
+#         return {"error": "Could not extract all required features"}
+
+#     prediction = model.predict([np.array(features)])
+#     prediction_value = int(prediction[0])   
+#     result = "Malignant" if prediction_value == 0 else "Benign"
+
+#     probs = model.predict_proba([np.array(features)])[0]
+#     benign_prob = int(round(probs[1] * 100, 2))      
+#     malignant_prob = int(round(probs[0] * 100, 2))   
+
+#     return {
+#         "prediction": result,
+#         "features": features,
+#         "benign_probability": benign_prob,
+#         "malignant_probability": malignant_prob
+#     }
+#     #return {"prediction": result, "features": features}
+
+
 @app.post("/predict-pdf/")
 async def predict_pdf(file: UploadFile = File(...)):
-    # Save uploaded PDF to temporary file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-    # Extract text and features
     text = extract_text_from_pdf(pdf_path)
     features = extract_features(text)
 
@@ -66,17 +95,22 @@ async def predict_pdf(file: UploadFile = File(...)):
         return {"error": "Could not extract all required features"}
 
     prediction = model.predict([np.array(features)])
-    prediction_value = int(prediction[0])   
+    prediction_value = int(prediction[0])
     result = "Malignant" if prediction_value == 0 else "Benign"
 
     probs = model.predict_proba([np.array(features)])[0]
-    benign_prob = int(round(probs[1] * 100, 2))      
-    malignant_prob = int(round(probs[0] * 100, 2))   
+    benign_prob = int(round(probs[1] * 100, 2))
+    malignant_prob = int(round(probs[0] * 100, 2))
+
+    # New: Add feature importance (if available)
+    importance = None
+    if hasattr(model, "feature_importances_"):
+        importance = model.feature_importances_.tolist()
 
     return {
         "prediction": result,
         "features": features,
         "benign_probability": benign_prob,
-        "malignant_probability": malignant_prob
+        "malignant_probability": malignant_prob,
+        "importance": importance
     }
-    #return {"prediction": result, "features": features}
