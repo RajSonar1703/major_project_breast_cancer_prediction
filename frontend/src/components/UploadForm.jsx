@@ -5,6 +5,7 @@ import "../App.css";
 
 export default function UploadForm({ setResult }) {
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,6 +20,7 @@ export default function UploadForm({ setResult }) {
     formData.append("file", file);
 
     try {
+      setLoading(true);
       const res = await axios.post("http://localhost:8000/predict-pdf/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -28,15 +30,27 @@ export default function UploadForm({ setResult }) {
       console.error("Error:", error);
       setResult({ prediction: "Error", error: "Upload failed or model error" });
       navigate("/result");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="upload-container">
+    <div className="upload-simple-container">
       <h2>Upload Medical Report (PDF)</h2>
-      <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files[0])} />
-      <button className="btn" onClick={handleSubmit}>Upload & Predict</button>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setFile(e.target.files[0])}
+        />
+        <br /><br />
+        <button className="simple-btn" type="submit" disabled={loading}>
+          {loading ? "Processing..." : "Upload & Predict"}
+        </button>
+      </form>
+
+      {file && <p className="file-name">Selected File: {file.name}</p>}
     </div>
   );
 }
-
