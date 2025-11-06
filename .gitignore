@@ -1,0 +1,10 @@
+# Ignore Python virtual environment
+venv/
+backend/venv/
+**/venv/
+
+echo "venv/
+__pycache__/
+*.pyc
+node_modules/
+.env" > .gitignore
