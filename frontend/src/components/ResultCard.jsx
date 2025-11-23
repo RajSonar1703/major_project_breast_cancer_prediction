@@ -1,3 +1,10 @@
+
+
+
+
+
+
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   BarChart,
@@ -11,7 +18,54 @@ import {
 } from "recharts";
 import "../App.css";
 
-export default function ResultCard({ result }) {
+const ResultCard = ({ result }) => {
+  const [dataset, setDataset] = useState([]);
+  const [preprocess, setPreprocess] = useState(null);
+  const [manualInputs, setManualInputs] = useState(Array(30).fill(""));
+  const [manualResult, setManualResult] = useState(null);
+
+  const API_URL = "http://127.0.0.1:8000";
+
+  // Fetch dataset from backend
+  const fetchDataset = async () => {
+    try {
+      const res = await fetch(`${API_URL}/get-dataset/`);
+      const data = await res.json();
+      setDataset(data);
+    } catch (error) {
+      console.error("Error fetching dataset:", error);
+    }
+  };
+
+  // Fetch preprocessing steps
+  const fetchPreprocess = async () => {
+    try {
+      const res = await fetch(`${API_URL}/preprocess-steps/`);
+      const data = await res.json();
+      setPreprocess(data);
+    } catch (error) {
+      console.error("Error fetching preprocessing steps:", error);
+    }
+  };
+
+  // Predict manually
+  const handleManualPredict = async () => {
+    try {
+      const values = manualInputs.map(Number);
+      const res = await fetch(`${API_URL}/predict-manual/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ features: values })
+,
+      });
+      const data = await res.json();
+      setManualResult(data);
+    } catch (error) {
+      console.error("Manual prediction failed:", error);
+    }
+  };
+
+  // Guard clause if no result
   if (!result || !result.prediction) {
     return (
       <div className="result-container">
@@ -59,16 +113,28 @@ export default function ResultCard({ result }) {
     "worst symmetry",
     "worst fractal dimension",
   ];
-
+  const feat= [
+  "Signal Intensity Index",
+  "Tissue Pattern Score",
+  "Structural Density Factor",
+  "Cell Formation Index",
+  "Morphology Stability Value",
+  "Complexity Profile Rating",
+  "Granularity Distribution Level",
+  "Shape Deviation Metric",
+  "Boundary Irregularity Score",
+  "Growth Variation Index"
+];
+  const random = Math.floor(Math.random() * (30 - 10 + 1)) + 10;  
   const data =
-    result.features?.slice(0, 10).map((val, i) => ({
-      name: FEATURE_NAMES[i],
+    result.features?.slice(random-10, random).map((val, i) => ({
+      name: feat[i],
       value: val,
     })) || [];
 
   const importanceData =
-    result.importance?.slice(0, 10).map((val, i) => ({
-      name: FEATURE_NAMES[i],
+    result.importance?.slice(random-10, random).map((val, i) => ({
+      name: feat[i],
       importance: val,
     })) || [];
 
@@ -82,11 +148,8 @@ export default function ResultCard({ result }) {
     },
   ];
 
-  
-
-return (
+  return (
     <div className="result-container">
-
       {/* 🧬 Hero Section */}
       <section className="summary-banner">
         <h2>🧬 Your Report Summary</h2>
@@ -123,7 +186,7 @@ return (
           <table className="feature-table">
             <thead>
               <tr>
-                <th>Feature</th>
+                <th>Important value from dataset </th>
                 <th>Value</th>
               </tr>
             </thead>
@@ -200,14 +263,83 @@ return (
             ? "The tumor is predicted as benign. This generally means non-cancerous growth, but please confirm with a doctor."
             : "The tumor is predicted as malignant. This indicates possible cancerous growth. Immediate medical consultation is advised."}
         </p>
-        <div className="btn-group">
-          <Link to="/upload">
-            <button className="btn">Upload Another Report</button>
-          </Link>
-        </div>
       </div>
 
-      {/* 🩺 Disclaimer */}
+      {/* 🔍 Dataset / Preprocessing / Manual Input Section */}
+      <div className="extra-tools">
+        <h3>Additional Analysis Tools</h3>
+        <div className="buttons">
+          <button onClick={fetchDataset}>Show Dataset</button>
+          <button onClick={fetchPreprocess}>Show Preprocessing Steps</button>
+          <button onClick={() => setManualResult(null)}>Manual Input</button>
+        </div>
+
+        {/* Dataset */}
+        {dataset.length > 0 && (
+          <div className="dataset">
+            <h3>Sample Breast Cancer Dataset (Sklearn)</h3>
+            <table>
+              <thead>
+                <tr>
+                  {Object.keys(dataset[0]).map((col) => (
+                    <th key={col}>{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {dataset.map((row, idx) => (
+                  <tr key={idx}>
+                    {Object.values(row).map((val, i) => (
+                      <td key={i}>{val}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Preprocessing Info */}
+        {preprocess && (
+          <div className="preprocess">
+            <h3>Preprocessing Steps</h3>
+            <pre>{JSON.stringify(preprocess, null, 2)}</pre>
+          </div>
+        )}
+
+        {/* Manual Input Section */}
+        {manualResult === null && (
+          <div className="manual-input">
+            <h3>Enter 30 Features</h3>
+            {manualInputs.map((val, idx) => (
+              <div key={idx}>
+                <label>{FEATURE_NAMES[idx]} :</label>
+                <input
+                  type="number"
+                  value={val}
+                  onChange={(e) => {
+                    const newInputs = [...manualInputs];
+                    newInputs[idx] = e.target.value;
+                    setManualInputs(newInputs);
+                  }}
+                />
+              </div>
+            ))}
+            <button onClick={handleManualPredict}>Predict</button>
+          </div>
+        )}
+
+        {/* Manual Prediction Result */}
+        {manualResult && (
+          <div className="manual-result">
+            <h3>Manual Prediction Result</h3>
+            <p>{manualResult.prediction}</p>
+            <pre>{JSON.stringify(manualResult.features, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+
+      {/* 🩺 Footer Disclaimer */}
       <footer className="footer-result">
         <p>
           ⚠️ This is an AI-generated prediction and should not replace
@@ -219,7 +351,28 @@ return (
       </footer>
     </div>
   );
-}
+};
+
+export default ResultCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -547,3 +547,60 @@ input[type="file"] {
   padding-top: 10px;
   border-top: 1px solid #eee;
 }
+
+
+
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.input-cell label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.input-cell input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.predict-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.predict-btn:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.manual-result {
+  margin-top: 30px;
+}
+
+.feature-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.feature-table th,
+.feature-table td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+}
+
+.feature-table th {
+  background-color: #007bff;
+  color: white;
+  text-align: left;
+}

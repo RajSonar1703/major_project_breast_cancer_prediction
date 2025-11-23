@@ -1,57 +1,377 @@
+
 # from sklearn.datasets import load_breast_cancer
 # from sklearn.model_selection import train_test_split
-# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.metrics import accuracy_score
+# from xgboost import XGBClassifier
+# import pandas as pd
 # import joblib
 
-# # Load dataset
+# # -----------------------------
+# # 1. Load dataset
+# # -----------------------------
 # data = load_breast_cancer()
 # X, y = data.data, data.target
 
-# # Train-test split
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# print("===== Dataset Loaded =====")
+# print("Total Rows:", X.shape[0])
+# print("Total Columns:", X.shape[1])
+# print("\nFeature Names:\n", data.feature_names)
 
-# # Train RandomForest model
-# model = RandomForestClassifier(n_estimators=100, random_state=42)
+# # Convert to DataFrame for better printing
+# df = pd.DataFrame(X, columns=data.feature_names)
+# df['target'] = y
+
+# print("\n===== First 5 Rows =====")
+# print(df.head())
+
+# # -----------------------------
+# # 2. Train-test split
+# # -----------------------------
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X, y, test_size=0.2, random_state=42
+# )
+
+# print("\n===== Data Split =====")
+# print("X_train:", X_train.shape)
+# print("X_test :", X_test.shape)
+# print("y_train:", y_train.shape)
+# print("y_test :", y_test.shape)
+
+# # -----------------------------
+# # 3. Train XGBoost model
+# # -----------------------------
+# print("\n===== Training XGBoost Model =====")
+
+# model = XGBClassifier(
+#     use_label_encoder=False,
+#     eval_metric="logloss",
+#     random_state=42,
+#     n_estimators=300,
+#     learning_rate=0.05,
+#     max_depth=4,
+#     subsample=0.8,
+#     colsample_bytree=0.8
+# )
+
 # model.fit(X_train, y_train)
+# print("Model training completed!")
 
-# # Save model
+# # -----------------------------
+# # 4. Predictions & Accuracy
+# # -----------------------------
+# y_pred = model.predict(X_test)
+
+# print("\n===== Sample Predictions =====")
+# print("Predicted:", y_pred[:10])
+# print("Actual   :", y_test[:10])
+
+# acc = accuracy_score(y_test, y_pred)
+# print(f"\n⚡ XGBoost Accuracy: {acc:.4f}")
+
+# # -----------------------------
+# # 5. Save Model
+# # -----------------------------
 # joblib.dump(model, "breast_cancer_model.pkl")
-# print("✅ Model trained and saved successfully!")
+# print("\n✅ XGBoost model saved as 'breast_cancer_model.pkl'")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# import json
+# import joblib
+# import numpy as np
+# import pandas as pd
+# import xgboost as xgb
+# from sklearn.datasets import load_breast_cancer
+# from sklearn.model_selection import train_test_split
+# from sklearn.metrics import accuracy_score
+
+# # ============================================================
+# # 1. LOAD DATASET
+# # ============================================================
+# data = load_breast_cancer()
+# X = data.data
+# y = data.target
+
+# print("\n===== Dataset Loaded =====")
+# print(f"Total Rows: {X.shape[0]}")
+# print(f"Total Columns: {X.shape[1]}")
+
+# df = pd.DataFrame(X, columns=data.feature_names)
+# df["target"] = y
+
+# print("\n===== First 5 Rows =====")
+# print(df.head())
+
+# # ============================================================
+# # 2. TRAIN-TEST SPLIT
+# # ============================================================
+# X_train, X_test, y_train, y_test = train_test_split(
+#     X, y, test_size=0.2, random_state=42
+# )
+
+# print("\n===== Data Split =====")
+# print("X_train:", X_train.shape)
+# print("X_test :", X_test.shape)
+# print("y_train:", y_train.shape)
+# print("y_test :", y_test.shape)
+
+# # ============================================================
+# # 3. CONVERT TO DMatrix
+# # ============================================================
+# dtrain = xgb.DMatrix(X_train, label=y_train)
+# dtest = xgb.DMatrix(X_test, label=y_test)
+
+# # ============================================================
+# # 4. TRAINING PARAMETERS
+# # ============================================================
+# params = {
+#     "objective": "binary:logistic",
+#     "eval_metric": "logloss",
+#     "eta": 0.05,
+#     "max_depth": 4,
+#     "subsample": 0.8,
+#     "colsample_bytree": 0.8,
+#     "seed": 42
+# }
+
+# # ============================================================
+# # 5. STORAGE FOR LOGS
+# # ============================================================
+# eval_results = {}
+
+# # ============================================================
+# # 6. TRAIN XGBOOST USING NATIVE API (NO CALLBACK ERRORS)
+# # ============================================================
+# print("\n===== Training XGBoost Model =====")
+
+# model = xgb.train(
+#     params=params,
+#     dtrain=dtrain,
+#     num_boost_round=100,
+#     evals=[(dtrain, "train"), (dtest, "test")],
+#     evals_result=eval_results,   # store intermediate logs
+#     verbose_eval=True            # prints each iteration
+# )
+
+# print("\n===== Training Completed =====")
+
+# # ============================================================
+# # 7. SAVE MODEL
+# # ============================================================
+# model.save_model("breast_cancer_model.json")
+# print("Model saved as breast_cancer_model.json")
+
+# # ============================================================
+# # 8. TEST ACCURACY
+# # ============================================================
+# y_pred = (model.predict(dtest) > 0.5).astype(int)
+# acc = accuracy_score(y_test, y_pred)
+
+# print(f"\nModel Accuracy: {acc:.4f}")
+
+# # ============================================================
+# # 9. SAVE ALL INTERMEDIATE OUTPUTS TO JSON
+# # ============================================================
+# output_data = {
+#     "dataset_info": {
+#         "rows": int(X.shape[0]),
+#         "columns": int(X.shape[1]),
+#         "feature_names": data.feature_names.tolist(),
+#         "first_rows": df.head().to_dict(orient="records")
+#     },
+#     "split_info": {
+#         "X_train": X_train.shape,
+#         "X_test": X_test.shape,
+#         "y_train": y_train.shape,
+#         "y_test": y_test.shape
+#     },
+#     "training_logs": eval_results,  # <-- ALL intermediate logs here
+#     "accuracy": acc
+# }
+
+# with open("training_details.json", "w") as f:
+#     json.dump(output_data, f, indent=4)
+
+# print("\nAll intermediate logs saved to training_details.json")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import json
+import joblib
+import numpy as np
+import pandas as pd
+import xgboost as xgb
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from xgboost import XGBClassifier
-import joblib
+from imblearn.over_sampling import SMOTE   # <--- ADDED
 
-# Load dataset
+# ============================================================
+# 1. LOAD ORIGINAL DATASET
+# ============================================================
 data = load_breast_cancer()
-X, y = data.data, data.target
+X = data.data
+y = data.target
 
-# Train-test split
+print("\n===== Original Dataset Loaded =====")
+print(f"Rows: {X.shape[0]}, Columns: {X.shape[1]}")
+
+# ============================================================
+# 2. EXPAND DATASET TO 5000 SAMPLES USING SMOTE
+# ============================================================
+print("\n===== Applying SMOTE to Expand Dataset to 5000 Samples =====")
+
+sm = SMOTE(random_state=42)
+X_resampled, y_resampled = sm.fit_resample(X, y)
+
+desired_count = 5000
+if X_resampled.shape[0] > desired_count:
+    idx = np.random.choice(X_resampled.shape[0], desired_count, replace=False)
+    X_resampled = X_resampled[idx]
+    y_resampled = y_resampled[idx]
+
+print(f"New Dataset Size: {X_resampled.shape}")
+
+df = pd.DataFrame(X_resampled, columns=data.feature_names)
+df["target"] = y_resampled
+
+# Save expanded dataset
+df.to_csv("expanded_dataset.csv", index=False)
+print("Expanded dataset saved as expanded_dataset.csv")
+
+print("\n===== First 5 Rows of Expanded Dataset =====")
+print(df.head())
+
+# ============================================================
+# 3. TRAIN-TEST SPLIT
+# ============================================================
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X_resampled, y_resampled, test_size=0.2, random_state=42
 )
 
-# Train XGBoost model
-model = XGBClassifier(
-    use_label_encoder=False,
-    eval_metric="logloss",
-    random_state=42,
-    n_estimators=300,      # more trees for better learning
-    learning_rate=0.05,    # smaller learning rate = more precise
-    max_depth=4,           # controls complexity
-    subsample=0.8,         # prevents overfitting
-    colsample_bytree=0.8   # use subset of features for each tree
+print("\n===== Data Split =====")
+print("X_train:", X_train.shape)
+print("X_test :", X_test.shape)
+print("y_train:", y_train.shape)
+print("y_test :", y_test.shape)
+
+# ============================================================
+# 4. CONVERT TO DMatrix
+# ============================================================
+dtrain = xgb.DMatrix(X_train, label=y_train)
+dtest = xgb.DMatrix(X_test, label=y_test)
+
+# ============================================================
+# 5. TRAINING PARAMETERS
+# ============================================================
+params = {
+    "objective": "binary:logistic",
+    "eval_metric": "logloss",
+    "eta": 0.05,
+    "max_depth": 4,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "seed": 42
+}
+
+# ============================================================
+# 6. STORAGE FOR LOGS
+# ============================================================
+eval_results = {}
+
+# ============================================================
+# 7. TRAIN XGBOOST (Native API)
+# ============================================================
+print("\n===== Training XGBoost Model =====")
+
+model = xgb.train(
+    params=params,
+    dtrain=dtrain,
+    num_boost_round=100,
+    evals=[(dtrain, "train"), (dtest, "test")],
+    evals_result=eval_results,
+    verbose_eval=True
 )
 
-model.fit(X_train, y_train)
+print("\n===== Training Completed =====")
 
-# Evaluate accuracy
-y_pred = model.predict(X_test)
+# ============================================================
+# 8. SAVE MODEL
+# ============================================================
+model.save_model("breast_cancer_model.json")
+print("Model saved as breast_cancer_model.json")
+
+# ============================================================
+# 9. TEST ACCURACY
+# ============================================================
+y_pred = (model.predict(dtest) > 0.5).astype(int)
 acc = accuracy_score(y_test, y_pred)
-print(f"⚡ XGBoost Accuracy: {acc:.4f}")
 
-# Save model
-joblib.dump(model, "breast_cancer_model.pkl")
-print("✅ XGBoost model trained and saved successfully!")
+print(f"\nModel Accuracy: {acc:.4f}")
+
+# ============================================================
+# 10. SAVE ALL INTERMEDIATE OUTPUTS
+# ============================================================
+output_data = {
+    "dataset_info": {
+        "original_rows": int(X.shape[0]),
+        "expanded_rows": int(X_resampled.shape[0]),
+        "columns": int(X.shape[1]),
+        "feature_names": data.feature_names.tolist(),
+        "first_expanded_rows": df.head().to_dict(orient="records")
+    },
+    "split_info": {
+        "X_train": X_train.shape,
+        "X_test": X_test.shape,
+        "y_train": y_train.shape,
+        "y_test": y_test.shape
+    },
+    "training_logs": eval_results,
+    "accuracy": acc
+}
+
+with open("training_details.json", "w") as f:
+    json.dump(output_data, f, indent=4)
+
+print("\nAll intermediate logs saved to training_details.json\n")
