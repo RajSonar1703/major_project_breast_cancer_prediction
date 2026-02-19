@@ -7,3 +7,4 @@ joblib
 xgboost
 pdfplumber
 python-multipart
+gunicorn
