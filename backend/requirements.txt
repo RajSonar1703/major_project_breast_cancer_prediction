@@ -4,5 +4,6 @@ scikit-learn
 pandas
 numpy
 joblib
+xgboost
 pdfplumber
 python-multipart
