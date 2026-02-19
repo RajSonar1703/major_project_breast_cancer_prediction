@@ -659,7 +659,7 @@ const ResultCard = ({ result }) => {
       <div className="extra-tools">
         <h3>Additional Analysis Tools</h3>
         <div className="buttons">
-          {/* <button onClick={fetchDataset}>Show Dataset</button> */}
+          <button onClick={fetchDataset}>Show Dataset</button>
           <button onClick={fetchPreprocess}>Show Preprocessing Steps</button>
         </div>
 
