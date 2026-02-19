@@ -141,7 +141,8 @@ import {
 import "../App.css";
 
 export default function ManualInput() {
-  const API_URL = "http://127.0.0.1:8000";
+  const API_URL = "https://major-project-breast-cancer-prediction.onrender.com"
+  // const API_URL = "http://127.0.0.1:8000";
 
   const FEATURE_NAMES = [
     "mean radius", "mean texture", "mean perimeter", "mean area", "mean smoothness",

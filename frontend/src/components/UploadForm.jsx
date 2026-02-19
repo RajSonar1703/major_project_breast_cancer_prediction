@@ -26,7 +26,8 @@ export default function UploadForm({ setResult }) {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:8000/predict-pdf/", formData, {
+      //  const res = await axios.post("http://localhost:8000/predict-pdf/"
+     const res = await axios.post(`${process.env.REACT_APP_API_URL}/predict-pdf/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(res.data);
@@ -43,7 +44,9 @@ export default function UploadForm({ setResult }) {
   // Handle dataset fetching
   const handleShowDataset = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/show-dataset/");
+      // const response = await axios.get("http://localhost:8000/show-dataset/");
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/show-dataset/`);
+
       setDataset(response.data);
     } catch (error) {
       console.error("Error fetching dataset:", error);
