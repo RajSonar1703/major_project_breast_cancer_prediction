@@ -403,13 +403,16 @@ import {
 } from "recharts";
 import "../App.css";
 
-const ResultCard = ({ result }) => {
+// const ResultCard = ({ result }) => 
+const ResultCard = ({ result: initialResult }) => {
   const [dataset, setDataset] = useState([]);
   const [preprocess, setPreprocess] = useState(null);
   const [manualInputs, setManualInputs] = useState(Array(30).fill(""));
   const [manualResult, setManualResult] = useState(null);
+  const [result, setResult] = useState(initialResult);
 
-  const API_URL = "http://127.0.0.1:8000";
+  // const API_URL = "http://127.0.0.1:8000";
+  const API_URL = process.env.REACT_APP_API_URL;
 
   // Fetch dataset from backend
   const fetchDataset = async () => {
@@ -448,12 +451,32 @@ const ResultCard = ({ result }) => {
       });
       const data = await res.json();
       setManualResult(data);
+      setResult(data); 
+      // this is newly added  ^ 
     } catch (error) {
       console.error("Manual prediction failed:", error);
     }
   };
 
   // Guard clause if no result
+
+  // const finalResult = manualResult || result;
+
+  // if (!finalResult || !finalResult.prediction) {
+  //   return (
+  //     <div className="result-container">
+  //       <div className="result-card">
+  //         <h2>No Result Found</h2>
+  //         <Link to="/">
+  //           <button className="btn">Try Again</button>
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
+
+
   if (!result || !result.prediction) {
     return (
       <div className="result-container">

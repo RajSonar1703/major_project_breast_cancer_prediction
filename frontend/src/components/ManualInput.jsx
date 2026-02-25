@@ -146,7 +146,8 @@ import {
 import "../App.css";
 
 export default function ManualInput() {
-  const API_URL = "https://major-project-breast-cancer-prediction.onrender.com"
+  const API_URL = process.env.REACT_APP_API_URL;
+  // const API_URL = "https://major-project-breast-cancer-prediction.onrender.com"
   // const API_URL = "http://127.0.0.1:8000";
 
   const FEATURE_NAMES = [
@@ -184,9 +185,12 @@ export default function ManualInput() {
         body: JSON.stringify({ features: manualInputs.map(Number) }),
       });
 
+      // const data = await res.json();
+      // setManualResult(data);
       const data = await res.json();
+      console.log("API RESPONSE:", data);   // ADD THIS
       setManualResult(data);
-
+      
     } catch (error) {
       console.error("Manual prediction failed:", error);
       alert("Prediction failed. Check console.");

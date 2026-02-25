@@ -212,21 +212,40 @@ from sklearn.datasets import load_breast_cancer
 # -----------------------------
 # Initialize FastAPI App
 # -----------------------------
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
 
 # Allow all origins (Frontend can be anywhere)
+
+origins = [
+    "http://localhost:3000",
+    "https://major-project-breast-cancer-prediction.onrender.com"
+]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# YOUR ROUTES BELOW
+@app.post("/predict-pdf/")
+async def predict_pdf():
+    return {"message": "working"}
 
 # -----------------------------
 # Load Trained Model
 # -----------------------------
-model = joblib.load("breast_cancer_model.pkl")
+# try
+
+# model = joblib.load("breast_cancer_model.pkl")
+import xgboost as xgb
+
+model = xgb.Booster()
+model.load_model("breast_cancer_model.json")
 
 # -----------------------------
 # List of Required 30 Features
@@ -320,15 +339,31 @@ async def predict_pdf(file: UploadFile = File(...)):
     if len(features) != 30:
         return {"error": "Could not extract all 30 features from PDF."}
 
-    features_array = np.array(features).reshape(1, -1)
+    # features_array = np.array(features).reshape(1, -1)
+    # prediction = model.predict(features_array)
+    # TRY
+    # -----------
+    dtest = xgb.DMatrix(np.array(features).reshape(1, -1))
+    probs = model.predict(dtest)
+    prediction = (probs > 0.5).astype(int)
+    
+    # --------------
+    # EDITED
+    # prediction_value = int(prediction[0])
+    # result = "Malignant" if prediction_value == 0 else "Benign"
 
-    prediction = model.predict(features_array)
+    # probs = model.predict_proba(features_array)[0]
+    # benign_prob = float(round(probs[1] * 100, 2))
+    # malignant_prob = float(round(probs[0] * 100, 2))
+    
+    # TRY
+    # ------------------------
     prediction_value = int(prediction[0])
     result = "Malignant" if prediction_value == 0 else "Benign"
 
-    probs = model.predict_proba(features_array)[0]
-    benign_prob = float(round(probs[1] * 100, 2))
-    malignant_prob = float(round(probs[0] * 100, 2))
+    benign_prob = float(round(probs[0] * 100, 2))
+    malignant_prob = float(round((1 - probs[0]) * 100, 2))
+    # ----------------
 
     # Feature importance (only if model supports it)
     importance = None
@@ -353,19 +388,44 @@ class ManualFeatures(BaseModel):
 def predict_manual(data: ManualFeatures):
     if len(data.features) != 30:
         return {"error": "Exactly 30 features are required."}
+    # TRY
+    # features_array = np.array(data.features).reshape(1, -1)
+    # prediction = model.predict(features_array)[0]
+    # probs = model.predict_proba(features_array)[0]
 
-    features_array = np.array(data.features).reshape(1, -1)
-    prediction = model.predict(features_array)[0]
-    probs = model.predict_proba(features_array)[0]
+    # ---
+    dtest = xgb.DMatrix(np.array(data.features).reshape(1, -1))
+    probs = model.predict(dtest)
+    prediction = (probs > 0.5).astype(int)
 
-    result = "Malignant" if int(prediction) == 0 else "Benign"
+    prediction_value = int(prediction[0])
+    result = "Malignant" if prediction_value == 0 else "Benign"
 
+    benign_prob = float(round(probs[0] * 100, 2))
+    malignant_prob = float(round((1 - probs[0]) * 100, 2))
+    # -----
+
+    # result = "Malignant" if int(prediction) == 0 else "Benign"
+
+    # return {
+    #     "prediction": result,
+    #     "benign_probability": float(round(probs[1] * 100, 2)),
+    #     "malignant_probability": float(round(probs[0] * 100, 2)),
+    #     "features": [float(x) for x in data.features]
+    # }
+    # TRY
+    # -------
     return {
-        "prediction": result,
-        "benign_probability": float(round(probs[1] * 100, 2)),
-        "malignant_probability": float(round(probs[0] * 100, 2)),
-        "features": [float(x) for x in data.features]
+    "prediction": result,
+    "benign_probability": benign_prob,
+    "malignant_probability": malignant_prob,
+    "features": [float(x) for x in data.features]
     }
+    # -------------
+    
+    
+    
+    
 
 # -----------------------------
 # Training Logs API

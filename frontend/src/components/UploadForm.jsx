@@ -5,6 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export default function UploadForm({ setResult }) {
   const [file, setFile] = useState(null);
@@ -27,7 +28,7 @@ export default function UploadForm({ setResult }) {
     try {
       setLoading(true);
       //  const res = await axios.post("http://localhost:8000/predict-pdf/"
-     const res = await axios.post(`${process.env.REACT_APP_API_URL}/predict-pdf/`, formData, {
+     const res = await axios.post(`${API_URL}/predict-pdf/`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(res.data);
@@ -45,7 +46,7 @@ export default function UploadForm({ setResult }) {
   const handleShowDataset = async () => {
     try {
       // const response = await axios.get("http://localhost:8000/show-dataset/");
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/show-dataset/`);
+      const response = await axios.get(`${API_URL}/show-dataset/`);
 
       setDataset(response.data);
     } catch (error) {
